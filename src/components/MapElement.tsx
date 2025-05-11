@@ -3,23 +3,16 @@ import type { LatLngExpression } from "leaflet";
 
 import "leaflet/dist/leaflet.css";
 
-export const MapElement = ({ center }: { center?: LatLngExpression }) => {
-  console.log("MapElement center", center);
-
+export const MapElement = ({ center, lineCoords }: { center: LatLngExpression; lineCoords: LatLngExpression[] }) => {
   return (
-    <MapContainer center={center ?? [0, 0]} zoom={14} scrollWheelZoom={false}>
+    <MapContainer center={center} zoom={20} scrollWheelZoom={true}>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
-      <Polyline
-        pathOptions={{ color: "lime" }}
-        positions={[
-          [51.505, -0.09],
-          [51.51, -0.1],
-          [51.51, -0.12],
-        ]}
-      />
+
+      {center && <Polyline pathOptions={{ color: "blue", weight: 10 }} positions={[center, center]} />}
+      {lineCoords && <Polyline pathOptions={{ color: "lime" }} positions={lineCoords} />}
     </MapContainer>
   );
 };

@@ -1,3 +1,9 @@
+import { MapElement } from "../components/MapElement";
+
 export const MapScreen = () => {
-  return <div>map</div>;
+  return (
+    <div className="h-dvh w-full flex items-center justify-center bg-gray-100">
+      <MapElement />
+    </div>
+  );
 };

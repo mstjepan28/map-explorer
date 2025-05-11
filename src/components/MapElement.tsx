@@ -5,7 +5,7 @@ import "leaflet/dist/leaflet.css";
 
 export const MapElement = ({ center, lineCoords }: { center: LatLngExpression; lineCoords: LatLngExpression[] }) => {
   return (
-    <MapContainer center={center} zoom={20} scrollWheelZoom={true}>
+    <MapContainer center={center} zoom={20} keyboard={false} scrollWheelZoom>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

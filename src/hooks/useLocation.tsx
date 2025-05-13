@@ -1,34 +1,53 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 export const useLocation = ({
+  onCoordinatesLoad,
   onCoordinatesChange,
+  onError,
 }: {
+  onCoordinatesLoad: (coordinates: GeolocationCoordinates) => void;
   onCoordinatesChange: (coordinates: GeolocationCoordinates) => void;
+  onError?: (error: GeolocationPositionError) => void;
 }) => {
-  const [coordinates, setCoordinates] = useState<GeolocationCoordinates | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const initCoordinatesSet = useRef(false);
 
-  const requestLocation = async () => {
+  const requestLocation = () => {
     if (!navigator.geolocation) {
-      setError("Geolocation is not supported by your browser.");
+      if (typeof onError === "function") {
+        onError({
+          code: 0,
+          message: "Geolocation is not supported by this browser",
+          PERMISSION_DENIED: 1,
+          POSITION_UNAVAILABLE: 2,
+          TIMEOUT: 3,
+        });
+      }
+
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        onCoordinatesChange(position.coords);
-        setCoordinates(position.coords);
+        if (initCoordinatesSet.current) {
+          onCoordinatesChange(position.coords);
+          return;
+        }
+
+        onCoordinatesLoad(position.coords);
+        initCoordinatesSet.current = true;
       },
-      (err) => setError(err.message),
+      (err) => {
+        if (typeof onError === "function") {
+          onError(err);
+        }
+      },
     );
   };
 
   useEffect(() => {
     requestLocation();
-  }, []);
+    const intervalId = setInterval(requestLocation, 5000);
 
-  return {
-    coordinates: coordinates,
-    error: error,
-  };
+    return () => clearInterval(intervalId);
+  }, []);
 };

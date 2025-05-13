@@ -9,8 +9,18 @@ export const MapScreen = () => {
   const [lineCoords, setLineCoords] = useState<[number, number][]>([]);
 
   useLocation({
-    onCoordinatesChange: (coords) => {
+    onCoordinatesLoad: (coords) => {
       setLineCoords([[coords.latitude, coords.longitude]]);
+    },
+    onCoordinatesChange: (newCoords) => {
+      setLineCoords((p) => {
+        const [lastLat, lastLong] = p[p.length - 1] ?? [];
+        if (lastLat === newCoords.latitude && lastLong === newCoords.longitude) {
+          return p;
+        }
+
+        return [...p, [newCoords.latitude, newCoords.longitude]];
+      });
     },
   });
 
